@@ -4,33 +4,10 @@ const Button = (props) => (
 	<button onClick={props.handleClick}>{props.text}</button>
 )
 
-const Statistics = (props) => {
-	return <div>{props.status}</div>
-}
-
-const Total = (props) => {
-	return <div>total {props.good + props.neutral + props.bad}</div>
-}
-
-const Average = (props) => {
-	if (props.good === 0 || props.good + props.bad + props.neutral === 0) {
-		return <div>Average 0</div>
-	}
+const StatisticLine = (props) => {
 	return (
 		<div>
-			Average {(props.good - props.bad) / (props.good + props.bad + props.neutral)}
-		</div>
-	)
-}
-
-const Positive = (props) => {
-	if (props.good === 0 || props.good + props.bad + props.neutral === 0) {
-		return <div>Positive 0</div>
-	}
-
-	return (
-		<div>
-			Positive {(props.good / (props.good + props.bad + props.neutral)) * 100}
+			{props.text} {props.status}
 		</div>
 	)
 }
@@ -40,8 +17,11 @@ const App = () => {
 	const [good, setGood] = useState(0)
 	const [neutral, setNeutral] = useState(0)
 	const [bad, setBad] = useState(0)
+	const total = good + neutral + bad
+	const average = (good - bad) / total
+	const positive = good / total
 
-	if (good + neutral + bad === 0) {
+	if (total === 0) {
 		return (
 			<div>
 				<h2>give feedback</h2>
@@ -55,7 +35,7 @@ const App = () => {
 					bad
 				</Button>
 				<h2>statistics</h2>
-				No statistics
+				No feedback given
 			</div>
 		)
 	}
@@ -72,12 +52,12 @@ const App = () => {
 				bad
 			</Button>
 			<h2>statistics</h2>
-			<Statistics status={good} />
-			<Statistics status={neutral} />
-			<Statistics status={bad} />
-			<Total good={good} neutral={neutral} bad={bad} />
-			<Average good={good} neutral={neutral} bad={bad} />
-			<Positive good={good} neutral={neutral} bad={bad} />
+			<StatisticLine text="good" status={good} />
+			<StatisticLine text="neutral " status={neutral} />
+			<StatisticLine text="bad" status={bad} />
+			<StatisticLine text="total " status={total} />
+			<StatisticLine text="average " status={average} />
+			<StatisticLine text="positive" status={positive} />
 		</div>
 	)
 }
