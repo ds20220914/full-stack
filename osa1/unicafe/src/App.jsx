@@ -5,9 +5,32 @@ const Button = (props) => (
 )
 
 const Statistics = (props) => {
+	return <div>{props.status}</div>
+}
+
+const Total = (props) => {
+	return <div>total {props.good + props.neutral + props.bad}</div>
+}
+
+const Average = (props) => {
+	if (props.good === 0 || props.good + props.bad + props.neutral === 0) {
+		return <div>Average 0</div>
+	}
 	return (
 		<div>
-			<p>{props.status}</p>
+			Average {(props.good - props.bad) / (props.good + props.bad + props.neutral)}
+		</div>
+	)
+}
+
+const Positive = (props) => {
+	if (props.good === 0 || props.good + props.bad + props.neutral === 0) {
+		return <div>Positive 0</div>
+	}
+
+	return (
+		<div>
+			Positive {(props.good / (props.good + props.bad + props.neutral)) * 100}
 		</div>
 	)
 }
@@ -34,6 +57,9 @@ const App = () => {
 			<Statistics status={good} />
 			<Statistics status={neutral} />
 			<Statistics status={bad} />
+			<Total good={good} neutral={neutral} bad={bad} />
+			<Average good={good} neutral={neutral} bad={bad} />
+			<Positive good={good} neutral={neutral} bad={bad} />
 		</div>
 	)
 }
