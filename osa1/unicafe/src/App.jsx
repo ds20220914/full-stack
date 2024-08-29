@@ -6,9 +6,10 @@ const Button = (props) => (
 
 const StatisticLine = (props) => {
 	return (
-		<div>
-			{props.text} {props.status}
-		</div>
+		<tr>
+			<td>{props.text}</td>
+			<td>{props.status}</td>
+		</tr>
 	)
 }
 
@@ -19,7 +20,7 @@ const App = () => {
 	const [bad, setBad] = useState(0)
 	const total = good + neutral + bad
 	const average = (good - bad) / total
-	const positive = good / total
+	const positive = (good / total) * 100
 
 	if (total === 0) {
 		return (
