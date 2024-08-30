@@ -1,7 +1,7 @@
 import { useState } from "react"
 
 const Button = (props) => (
-	<button onClick={props.handleClick}>next anecdote</button>
+	<button onClick={props.handleClick}>{props.text}</button>
 )
 
 const App = () => {
@@ -18,18 +18,30 @@ const App = () => {
 
 	const [selected, setSelected] = useState(0)
 
+	const [points, setPoints] = useState([0, 0, 0, 0, 0, 0, 0, 0])
+
 	const random = () => {
 		const min = 1
 		const max = 8
 		const randomNumber = Math.floor(Math.random() * (max - min + 1)) + min
 		console.log(randomNumber)
-		const giverandom = () => setSelected(randomNumber)
-		return giverandom
+		setSelected(randomNumber - 1)
+	}
+
+	const vote = () => {
+		const number = selected
+		console.log(number)
+		const copy = [...points]
+		copy[number] += 1
+		console.log(copy)
+		setPoints(copy)
 	}
 	return (
 		<div>
 			<p>{anecdotes[selected]}</p>
-			<Button handleClick={random()}> </Button>
+			vote {points[selected]}
+			<Button handleClick={vote} text="vote"></Button>
+			<Button handleClick={random} text="next anecdote"></Button>
 		</div>
 	)
 }
