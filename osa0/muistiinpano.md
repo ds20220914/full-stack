@@ -10,7 +10,7 @@ sequenceDiagram
     server-->>browser: HTTP 302 redirect to /notes
     deactivate server
     
-    Note right of browser: The browser follows the redirect
+    "The browser follows the redirect"
     
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
@@ -27,11 +27,11 @@ sequenceDiagram
     server-->>browser: The JavaScript file
     deactivate server
 
-    Note right of browser: The browser starts executing the JavaScript code that fetches the JSON from the server
+    "The browser starts executing the JavaScript code that fetches the JSON from the server"
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
     activate server
     server-->>browser: [{ "content": "New note content", "date": "2024-08-28" }, ... ]
     deactivate server
 
-    Note right of browser: The browser executes the callback function that renders the updated list of notes
+    " The browser executes the callback function that renders the updated list of notes"
