@@ -1,13 +1,12 @@
-import React from 'react'
-import Part from './Part'
+import React from "react"
+import Part from "./Part"
 
-const Content = (props) => {
-	console.log(props.parts[1])
+const Content = ({ parts }) => {
 	return (
 		<div>
-			<Part osat={props.parts[0]} />
-			<Part osat={props.parts[1]} />
-			<Part osat={props.parts[2]} />
+			{parts.map((part) => (
+				<Part key={part.id} osat={part} />
+			))}
 		</div>
 	)
 }
