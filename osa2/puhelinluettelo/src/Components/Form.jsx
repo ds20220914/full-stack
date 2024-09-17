@@ -1,4 +1,5 @@
 import { useState } from "react"
+import services from "../services/note"
 
 const Form = (props) => {
 	const [newName, setNewName] = useState("")
@@ -13,6 +14,7 @@ const Form = (props) => {
 			alert(`${newName} is already added to phonebook`)
 		} else {
 			props.setPersons(props.persons.concat({ name: newName, number: newNumber }))
+			services.create({ name: newName, number: newNumber })
 			console.log(props.persons)
 			setNewName("")
 			setNewNumber("")
