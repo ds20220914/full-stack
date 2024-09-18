@@ -1,3 +1,5 @@
+import services from "../services/note"
+
 const Persons = (props) => {
 	const personsToShow = props.persons.filter((person) =>
 		person.name.toLowerCase().includes(props.filter.toLowerCase())
@@ -7,7 +9,19 @@ const Persons = (props) => {
 		<ul>
 			{personsToShow.map((person, index) => (
 				<li key={index}>
-					{person.name} {person.number}
+					{person.name} {person.number}{" "}
+					<button
+						onClick={() =>
+							services.handleDelete(
+								person.id,
+								person.name,
+								props.persons,
+								props.setPersons
+							)
+						}
+					>
+						delete
+					</button>
 				</li>
 			))}
 		</ul>
