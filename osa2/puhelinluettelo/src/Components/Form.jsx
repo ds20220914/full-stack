@@ -4,6 +4,7 @@ import services from "../services/note"
 const Form = (props) => {
 	const [newName, setNewName] = useState("")
 	const [newNumber, setNewNumber] = useState("")
+
 	console.log(newName)
 	const addName = (event) => {
 		event.preventDefault()
@@ -11,11 +12,29 @@ const Form = (props) => {
 		const nameExists = props.persons.some((person) => person.name === newName)
 
 		if (nameExists) {
-			alert(`${newName} is already added to phonebook`)
+			const confirmUpdate = window.confirm(
+				`${newName} is already added to the phonebook, replace the old number with the new one?`
+			)
+			const updateID = props.persons.find((person) => person.name === newName)
+
+			if (confirmUpdate) {
+				const updatedPerson = { name: newName, number: newNumber }
+				console.log(updateID)
+				services.update(updateID.id, updatedPerson)
+				props.setPersons(
+					props.persons.map((person) =>
+						person.id !== updateID ? person : response.data
+					)
+				)
+			}
+			props.updateNote("Number updated")
+			setNewName("")
+			setNewNumber("")
 		} else {
 			props.setPersons(props.persons.concat({ name: newName, number: newNumber }))
 			services.create({ name: newName, number: newNumber })
 			console.log(props.persons)
+			props.updateNote("New number added")
 			setNewName("")
 			setNewNumber("")
 		}

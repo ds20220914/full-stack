@@ -16,7 +16,8 @@ const Persons = (props) => {
 								person.id,
 								person.name,
 								props.persons,
-								props.setPersons
+								props.setPersons,
+								props.updateNote
 							)
 						}
 					>
