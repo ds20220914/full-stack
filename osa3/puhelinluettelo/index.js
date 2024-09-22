@@ -78,6 +78,11 @@ app.post("/api/persons", (request, response) => {
 		})
 	}
 
+	const existNumber = () => notes.filter((note) => note.name === body.name)
+	if (existNumber) {
+		return response.status(400).json({ error: "name must be unique" })
+	}
+
 	const note = {
 		name: body.name,
 		number: body.number,
