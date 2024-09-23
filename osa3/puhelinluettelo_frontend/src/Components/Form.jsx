@@ -6,7 +6,7 @@ const Form = (props) => {
 	const [newNumber, setNewNumber] = useState("")
 
 	console.log(newName)
-	const addName = (event) => {
+	const addName = async (event) => {
 		event.preventDefault()
 
 		const nameExists = props.persons.some((person) => person.name === newName)
@@ -31,8 +31,10 @@ const Form = (props) => {
 			setNewName("")
 			setNewNumber("")
 		} else {
-			props.setPersons(props.persons.concat({ name: newName, number: newNumber }))
-			services.create({ name: newName, number: newNumber })
+			const newEntry = await services.create({ name: newName, number: newNumber })
+			console.log("1", newEntry)
+			props.setPersons(props.persons.concat(newEntry))
+
 			console.log(props.persons)
 			props.updateNote("New number added")
 			setNewName("")

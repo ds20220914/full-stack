@@ -4,7 +4,7 @@ const Persons = (props) => {
 	const personsToShow = props.persons.filter((person) =>
 		person.name.toLowerCase().includes(props.filter.toLowerCase())
 	)
-
+	console.log("2", personsToShow)
 	return (
 		<ul>
 			{personsToShow.map((person, index) => (
