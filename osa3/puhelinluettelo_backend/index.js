@@ -2,32 +2,12 @@ const express = require("express")
 const morgan = require("morgan")
 const app = express()
 const cors = require("cors")
+const mongoose = require("mongoose")
+require("dotenv").config()
+const Note = require("./models/note")
 
 app.use(express.static("dist"))
 app.use(cors())
-
-let notes = [
-	{
-		name: "Arto Hellas",
-		number: "040-123456",
-		id: "1",
-	},
-	{
-		name: "Ada Lovelace",
-		number: "39-44-5323523",
-		id: "2",
-	},
-	{
-		name: "Dan Abramov",
-		number: "12-43-234345",
-		id: "3",
-	},
-	{
-		name: "Mary Poppendieck",
-		number: "39-23-6423122",
-		id: "4",
-	},
-]
 app.use(express.json())
 
 morgan.token("body", (req) => {
@@ -46,7 +26,11 @@ app.get("/", (request, response) => {
 })
 
 app.get("/api/persons", (request, response) => {
-	response.json(notes)
+	Note.find({}).then(
+		Note.find({}).then((notes) => {
+			response.json(notes)
+		})
+	)
 })
 
 app.get("/info", (request, response) => {
@@ -74,14 +58,14 @@ app.get("/info", (request, response) => {
 
 app.get("/api/persons/:id", (request, response) => {
 	const id = request.params.id
-	const note = notes.find((note) => note.id === id)
-	response.json(note)
+	Note.findById(id).then((note) => {
+		response.json(note)
+	})
 })
 
 app.delete("/api/persons/:id", (request, response) => {
 	const id = request.params.id
-	notes = notes.filter((note) => note.id !== id)
-	response.status(204).end()
+	Note.findByIdAndDelete(id).then(response.status(204).end())
 })
 
 app.post("/api/persons", (request, response) => {
@@ -97,17 +81,15 @@ app.post("/api/persons", (request, response) => {
 	if (existNumber.length !== 0) {
 		return response.status(400).json({ error: "name must be unique" })
 	}
-	const random = Math.random() * 1000000
-	const randomString = random.toString()
 
-	const note = {
+	const note = new Note({
 		name: body.name,
 		number: body.number,
-		id: randomString,
-	}
+	})
 
-	notes = notes.concat(note)
-	response.json(note)
+	note.save().then((savedNote) => {
+		response.json(savedNote)
+	})
 })
 
 const PORT = process.env.PORT || 3001
