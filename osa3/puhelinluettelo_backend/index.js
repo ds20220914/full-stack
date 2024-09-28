@@ -25,46 +25,73 @@ app.get("/", (request, response) => {
 })
 
 app.get("/api/persons", (request, response) => {
-	Note.find({}).then(
-		Note.find({}).then((notes) => {
-			response.json(notes)
+	Note.find({})
+		.then(
+			Note.find({}).then((notes) => {
+				response.json(notes)
+			})
+		)
+		.catch((error) => {
+			next(error)
 		})
-	)
 })
 
 app.get("/info", (request, response) => {
-	const length = notes.length
-	const now = new Date()
+	Note.find({}).then((notes) => {
+		const length = notes.length
+		const now = new Date()
 
-	const formattedDate = now.toLocaleString("en-US", {
-		weekday: "short", // e.g., "Sat"
-		year: "numeric", // e.g., "2024"
-		month: "short", // e.g., "Jan"
-		day: "numeric", // e.g., "13"
-		hour: "numeric", // e.g., "9"
-		minute: "numeric", // e.g., "30"
-		second: "numeric", // e.g., "25"
-		timeZoneName: "long", // e.g., "Eastern European Standard Time"
-		timeZone: "Europe/Helsinki", // Set the Eastern European timezone
+		const formattedDate = now.toLocaleString("fi-FI", {
+			weekday: "short",
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+			hour: "numeric",
+			minute: "numeric",
+			second: "numeric",
+			timeZoneName: "long",
+			timeZone: "Europe/Helsinki",
+		})
+
+		const responseText = `
+            <p>Puhelinluettelossa on yhteystiedot ${length} henkilölle</p>
+            <p>${formattedDate}</p>
+        `
+
+		response.send(responseText)
 	})
-	const responseText = `
-    <p>Phonebook has info for ${length} people</p>
-    <p>${formattedDate}</p>
-  `
-
-	response.send(responseText)
 })
 
 app.get("/api/persons/:id", (request, response) => {
 	const id = request.params.id
-	Note.findById(id).then((note) => {
-		response.json(note)
-	})
+	Note.findById(id)
+		.then((note) => {
+			if (note) {
+				response.json(note)
+			} else {
+				response.status(404).end()
+			}
+		})
+		.catch((error) => next(error))
 })
 
 app.delete("/api/persons/:id", (request, response) => {
 	const id = request.params.id
-	Note.findByIdAndDelete(id).then(response.status(204).end())
+	Note.findByIdAndDelete(id)
+		.then(response.status(204).end())
+		.catch((error) => next(error))
+})
+
+app.put("/api/persons/:id", (request, response) => {
+	const id = request.params.id
+	const body = request.body
+	const updatedPerson = {
+		name: body.name,
+		number: body.number,
+	}
+	Note.findByIdAndUpdate(id, updatedPerson, { new: true, runValidators: true })
+		.then((savedNote) => response.json(savedNote))
+		.catch((error) => next(error))
 })
 
 app.post("/api/persons", (request, response) => {
@@ -86,10 +113,26 @@ app.post("/api/persons", (request, response) => {
 		number: body.number,
 	})
 
-	note.save().then((savedNote) => {
-		response.json(savedNote)
-	})
+	note
+		.save()
+		.then((savedNote) => {
+			response.json(savedNote)
+		})
+		.catch((error) => next(error))
 })
+
+const errorHandler = (error, request, response, next) => {
+	console.error(error.message)
+
+	if (error.name === "CastError") {
+		return response.status(400).send({ error: "malformatted id" })
+	} else if (error.name === "ValidationError") {
+		return response.status(400).json({ error: error.message })
+	}
+	next(error)
+}
+
+app.use(errorHandler)
 
 const PORTTI = process.env.PORT
 app.listen(PORTTI, () => {

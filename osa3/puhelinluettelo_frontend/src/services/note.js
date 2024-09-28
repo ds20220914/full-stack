@@ -20,8 +20,11 @@ const handleDelete = (id, name, persons, setPersons, updateNote) => {
 	updateNote("Number deleted")
 }
 
-const update = (id, update) => {
-	axios.put(`/api/persons/${id}`, update)
+const update = (id, update, persons, setPersons) => {
+	axios.put(`/api/persons/${id}`, update).then(() => {
+		setPersons(persons.map((person) => (person.id !== id ? person : update)))
+	})
+	return null
 }
 
 export default {

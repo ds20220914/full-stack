@@ -20,12 +20,7 @@ const Form = (props) => {
 			if (confirmUpdate) {
 				const updatedPerson = { name: newName, number: newNumber }
 				console.log(updateID)
-				services.update(updateID.id, updatedPerson)
-				props.setPersons(
-					props.persons.map((person) =>
-						person.id !== updateID ? person : response.data
-					)
-				)
+				services.update(updateID.id, updatedPerson, props.persons, props.setPersons)
 			}
 			props.updateNote("Number updated")
 			setNewName("")
