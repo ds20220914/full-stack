@@ -24,13 +24,12 @@ app.get("/", (request, response) => {
 	response.send("<h1>Hello World!</h1>")
 })
 
-app.get("/api/persons", (request, response) => {
+app.get("/api/persons", (request, response, next) => {
 	Note.find({})
-		.then(
-			Note.find({}).then((notes) => {
-				response.json(notes)
-			})
-		)
+		.then((notes) => {
+			response.json(notes)
+		})
+
 		.catch((error) => {
 			next(error)
 		})
@@ -62,7 +61,7 @@ app.get("/info", (request, response) => {
 	})
 })
 
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
 	const id = request.params.id
 	Note.findById(id)
 		.then((note) => {
@@ -75,26 +74,30 @@ app.get("/api/persons/:id", (request, response) => {
 		.catch((error) => next(error))
 })
 
-app.delete("/api/persons/:id", (request, response) => {
+app.delete("/api/persons/:id", (request, response, next) => {
 	const id = request.params.id
 	Note.findByIdAndDelete(id)
 		.then(response.status(204).end())
 		.catch((error) => next(error))
 })
 
-app.put("/api/persons/:id", (request, response) => {
+app.put("/api/persons/:id", (request, response, next) => {
 	const id = request.params.id
-	const body = request.body
+	const { name, number } = request.body
 	const updatedPerson = {
 		name: body.name,
 		number: body.number,
 	}
-	Note.findByIdAndUpdate(id, updatedPerson, { new: true, runValidators: true })
+	Note.findByIdAndUpdate(
+		id,
+		{ name, number },
+		{ new: true, runValidators: true, context: "query" }
+	)
 		.then((savedNote) => response.json(savedNote))
 		.catch((error) => next(error))
 })
 
-app.post("/api/persons", (request, response) => {
+app.post("/api/persons", (request, response, next) => {
 	const body = request.body
 
 	if (!body.name || !body.number) {

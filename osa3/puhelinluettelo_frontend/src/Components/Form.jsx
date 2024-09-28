@@ -26,12 +26,14 @@ const Form = (props) => {
 			setNewName("")
 			setNewNumber("")
 		} else {
-			const newEntry = await services.create({ name: newName, number: newNumber })
-			console.log("1", newEntry)
-			props.setPersons(props.persons.concat(newEntry))
-
-			console.log(props.persons)
-			props.updateNote("New number added")
+			try {
+				const newEntry = await services.create({ name: newName, number: newNumber })
+				console.log("1", newEntry)
+				props.setPersons(props.persons.concat(newEntry))
+				props.updateNote("New number added")
+			} catch (error) {
+				props.updateNote(`${error.response.data.error}`)
+			}
 			setNewName("")
 			setNewNumber("")
 		}
