@@ -24,7 +24,6 @@ const update = (id, update, persons, setPersons) => {
 	axios.put(`/api/persons/${id}`, update).then(() => {
 		setPersons(persons.map((person) => (person.id !== id ? person : update)))
 	})
-	return null
 }
 
 export default {

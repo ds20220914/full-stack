@@ -29,6 +29,6 @@ export default [
 		},
 	},
 	{
-		ignores: ["dist/**", "build/**"],
+		ignores: ["dist/**", "build/**", "vite.config.js", "src/services/note.js"],
 	},
 ]
