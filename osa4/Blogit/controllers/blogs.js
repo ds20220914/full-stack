@@ -9,11 +9,14 @@ blogsRouter.get("/", (request, response) => {
 
 blogsRouter.post("/", (request, response) => {
 	const body = request.body
+
+	const likes = body.likes !== undefined && body.likes !== null ? body.likes : 0
+
 	const blog = new Blog({
 		title: body.title,
 		author: body.author,
 		url: body.url,
-		likes: body.likes,
+		likes: likes,
 	})
 
 	blog.save().then((result) => {
