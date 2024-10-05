@@ -73,6 +73,23 @@ test("likes asennetaan nollaksi jos on tyhjä", async () => {
 	assert.strictEqual(response.body[2].likes, 0)
 })
 
+test("a blog can be deleted", async () => {
+	const response = await api.delete("/api/blogs/5a422aa71b54a676234d17f8")
+	const response2 = await api.get("/api/blogs")
+	assert.strictEqual(response2.body.length, 1)
+})
+
+test.only("update a blog", async () => {
+	const response = await api.put("/api/blogs/5a422a851b54a676234d17f7").send({
+		title: "päivitys",
+		author: "Edsger W. Dijkstra",
+		url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+		likes: 1,
+	})
+
+	assert.deepStrictEqual(response.body.title, "päivitys")
+})
+
 after(async () => {
 	await mongoose.connection.close()
 })
