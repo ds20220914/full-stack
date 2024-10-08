@@ -13,16 +13,11 @@ blogsRouter.get("/", async (request, response) => {
 blogsRouter.post(
 	"/",
 	middleware.tokenExtractor,
+	middleware.userExtractor,
 	async (request, response, next) => {
 		const body = request.body
 		try {
-			const decodedToken = jwt.verify(request.token, process.env.SECRET)
-			if (!decodedToken.id) {
-				return response.status(401).json({ error: "token invalid" })
-			}
-
-			const user = await User.findById(decodedToken.id)
-
+			const user = request.user
 			const likes =
 				body.likes !== undefined && body.likes !== null ? body.likes : 0
 
@@ -44,11 +39,28 @@ blogsRouter.post(
 	}
 )
 
-blogsRouter.delete("/:id", async (request, response) => {
-	const id = request.params.id
-	await Blog.findByIdAndDelete(id)
-	response.status(204).end()
-})
+blogsRouter.delete(
+	"/:id",
+	middleware.tokenExtractor,
+	async (request, response, next) => {
+		try {
+			const token = request.token
+			const id = request.params.id
+
+			const blog = await Blog.findById(id)
+			if (!blog) {
+				return response.status(404).json({ error: "blog not found" })
+			}
+
+			if (blog.user.toString() === request.user.id.toString()) {
+				Blog.findByIdAndDelete(id)
+				response.status(204).end()
+			}
+		} catch (error) {
+			next(error)
+		}
+	}
+)
 
 blogsRouter.put("/:id", async (request, response) => {
 	const id = request.params.id
