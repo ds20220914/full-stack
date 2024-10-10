@@ -9,6 +9,7 @@ const App = () => {
 	const [password, setPassword] = useState("")
 	const [user, setUser] = useState(null)
 	const [message, setMessage] = useState(null)
+	const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" })
 
 	useEffect(() => {
 		const fetchBlogs = async () => {
@@ -86,23 +87,77 @@ const App = () => {
 		</form>
 	)
 
-	const blogForm = () => (
-		<form onSubmit={addBlog}>
-			<input value={newBlog} onChange={handleBlogChange} />
-			<button type="submit">save</button>
-		</form>
-	)
-
 	const handleLogout = () => {
 		window.localStorage.removeItem("loggedBlogAppUser")
 		setUser(null)
 		setMessage("Logged out")
 	}
+	const addBlog = async (event) => {
+		event.preventDefault()
+
+		try {
+			const blogObject = {
+				title: newBlog.title,
+				author: newBlog.author,
+				url: newBlog.url,
+			}
+
+			const returnedBlog = await blogService.create(blogObject)
+			setBlogs(blogs.concat(returnedBlog)) // Päivitä blogilista lisäämällä uusi blogi
+			setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
+			setNewBlog({ title: "", author: "", url: "" }) // Tyhjennetään lomake kentät
+			setTimeout(() => {
+				setMessage(null)
+			}, 5000)
+		} catch (error) {
+			setMessage("Error adding blog")
+			setTimeout(() => {
+				setMessage(null)
+			}, 5000)
+		}
+	}
+
+	const handleBlogChange = (event) => {
+		setNewBlog({ ...newBlog, [event.target.name]: event.target.value })
+	}
+	const blogForm = () => (
+		<form onSubmit={addBlog}>
+			<div>
+				title:
+				<input
+					type="text"
+					value={newBlog.title}
+					name="title"
+					onChange={handleBlogChange}
+				/>
+			</div>
+			<div>
+				author:
+				<input
+					type="text"
+					value={newBlog.author}
+					name="author"
+					onChange={handleBlogChange}
+				/>
+			</div>
+			<div>
+				url:
+				<input
+					type="text"
+					value={newBlog.url}
+					name="url"
+					onChange={handleBlogChange}
+				/>
+			</div>
+			<button type="submit">create</button>
+		</form>
+	)
 
 	const blogList = () => (
 		<div>
 			<p>{user.name} logged in</p>
 			<button onClick={() => handleLogout()}>log out </button>
+			{blogForm()}
 			{blogs.map((blog) => (
 				<Blog key={blog.id} blog={blog} />
 			))}
