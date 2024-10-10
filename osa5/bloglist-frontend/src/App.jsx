@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import Blog from "./components/Blog"
 import blogService from "./services/blogs"
 import loginService from "./services/login"
+import "./index.css"
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
@@ -63,6 +64,13 @@ const App = () => {
 		}
 	}
 
+	const note = (content) => {
+		setMessage({ content })
+		setTimeout(() => {
+			setMessage(null)
+		}, 5000)
+	}
+
 	const loginForm = () => (
 		<form onSubmit={handleLogin}>
 			<div>
@@ -103,17 +111,11 @@ const App = () => {
 			}
 
 			const returnedBlog = await blogService.create(blogObject)
-			setBlogs(blogs.concat(returnedBlog)) // Päivitä blogilista lisäämällä uusi blogi
-			setMessage(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
-			setNewBlog({ title: "", author: "", url: "" }) // Tyhjennetään lomake kentät
-			setTimeout(() => {
-				setMessage(null)
-			}, 5000)
+			setBlogs(blogs.concat(returnedBlog))
+			note(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
+			setNewBlog({ title: "", author: "", url: "" })
 		} catch (error) {
-			setMessage("Error adding blog")
-			setTimeout(() => {
-				setMessage(null)
-			}, 5000)
+			note("error adding blog")
 		}
 	}
 
