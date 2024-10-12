@@ -3,6 +3,8 @@ import Blog from "./components/Blog"
 import blogService from "./services/blogs"
 import loginService from "./services/login"
 import "./index.css"
+import Togglable from "./components/Togglable"
+import BlogForm from "./components/BlogForm"
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
@@ -96,9 +98,8 @@ const App = () => {
 	)
 
 	const handleLogout = () => {
-		window.localStorage.removeItem("loggedBlogAppUser")
+		window.localStorage.removeItem("loggedBlogappUser")
 		setUser(null)
-		setMessage("Logged out")
 	}
 	const addBlog = async (event) => {
 		event.preventDefault()
@@ -122,44 +123,18 @@ const App = () => {
 	const handleBlogChange = (event) => {
 		setNewBlog({ ...newBlog, [event.target.name]: event.target.value })
 	}
-	const blogForm = () => (
-		<form onSubmit={addBlog}>
-			<div>
-				title:
-				<input
-					type="text"
-					value={newBlog.title}
-					name="title"
-					onChange={handleBlogChange}
-				/>
-			</div>
-			<div>
-				author:
-				<input
-					type="text"
-					value={newBlog.author}
-					name="author"
-					onChange={handleBlogChange}
-				/>
-			</div>
-			<div>
-				url:
-				<input
-					type="text"
-					value={newBlog.url}
-					name="url"
-					onChange={handleBlogChange}
-				/>
-			</div>
-			<button type="submit">create</button>
-		</form>
-	)
 
 	const blogList = () => (
 		<div>
 			<p>{user.name} logged in</p>
 			<button onClick={() => handleLogout()}>log out </button>
-			{blogForm()}
+			<Togglable buttonLabel="new blog">
+				<BlogForm
+					addBlog={addBlog}
+					newBlog={newBlog}
+					handleBlogChange={handleBlogChange}
+				/>
+			</Togglable>
 			{blogs.map((blog) => (
 				<Blog key={blog.id} blog={blog} />
 			))}
@@ -169,7 +144,6 @@ const App = () => {
 	return (
 		<div>
 			<h1>Blogs</h1>
-
 			<Notification message={message} />
 			{!user ? loginForm() : blogList()}
 		</div>
