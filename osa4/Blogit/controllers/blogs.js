@@ -41,13 +41,11 @@ blogsRouter.post(
 
 blogsRouter.delete(
 	"/:id",
-	middleware.tokenExtractor,
+	middleware.userExtractor,
 	async (request, response, next) => {
 		try {
-			const token = request.token
-			const id = request.params.id
+			const blog = await Blog.findById(request.params.id)
 
-			const blog = await Blog.findById(id)
 			if (!blog) {
 				return response.status(404).json({ error: "blog not found" })
 			}

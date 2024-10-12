@@ -41,20 +41,22 @@ blogsRouter.post(
 
 blogsRouter.delete(
 	"/:id",
-	middleware.tokenExtractor,
+	middleware.userExtractor,
 	async (request, response, next) => {
 		try {
-			const token = request.token
 			const id = request.params.id
-
+			const user = request.user
+			console.log(user)
 			const blog = await Blog.findById(id)
 			if (!blog) {
 				return response.status(404).json({ error: "blog not found" })
 			}
 
-			if (blog.user.toString() === request.user.id.toString()) {
-				Blog.findByIdAndDelete(id)
+			if (blog.user.toString() === user.id.toString()) {
+				await Blog.findByIdAndDelete(id)
 				response.status(204).end()
+			} else {
+				return response.json({ error: "user not same" })
 			}
 		} catch (error) {
 			next(error)
