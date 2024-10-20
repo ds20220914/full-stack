@@ -42,7 +42,7 @@ const Blog = ({ blog, setBlogs, blogs, note }) => {
 					<br />
 					{blog.url}
 					<br />
-					likes:{likes}
+					<div className="blog">likes:{likes}</div>
 					<button onClick={handleLikes}>like</button>
 					<br />
 					<button onClick={handleDelete}>delete</button>
