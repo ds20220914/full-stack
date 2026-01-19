@@ -1,19 +1,25 @@
 import { useMutation } from '@tanstack/react-query'
 import { createAne } from '../requests'
 import { useQueryClient } from '@tanstack/react-query'
+import { useContext } from 'react'
+import NotiContext from './notiContext'
 
 const AnecdoteForm = () => {
+  const { notificationDispatch } = useContext(NotiContext)
+
   const queryClient = useQueryClient()
   const newAneMutation = useMutation({
     mutationFn: createAne,
     onSuccess: (newAne) => {
       const aness = queryClient.getQueryData(['anecdotes'])
-      queryClient.setQueryData(
-        ['anecdotes'],
-        anecdotes.map((a) =>
-          a.id === updatedAnecdote.id ? updatedAnecdote : a,
-        ),
-      )
+      queryClient.setQueryData(['anecdotes'], aness.concat(newAne))
+      notificationDispatch({
+        type: 'notification',
+        payload: `You created '${newAne.content}'`,
+      })
+      setTimeout(() => {
+        notificationDispatch({ type: 'CLEAR' })
+      }, 5000)
     },
   })
 
