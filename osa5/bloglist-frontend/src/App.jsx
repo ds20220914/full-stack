@@ -5,21 +5,25 @@ import loginService from "./services/login"
 import "./index.css"
 import Togglable from "./components/Togglable"
 import BlogForm from "./components/BlogForm"
+import { createNoti } from "./notificationReducer"
+import { setBlogs, createBlog } from "./bloglistReducer"
+import { useDispatch, useSelector } from "react-redux"
 
 const App = () => {
-	const [blogs, setBlogs] = useState([])
 	const [username, setUsername] = useState("")
 	const [password, setPassword] = useState("")
 	const [user, setUser] = useState(null)
-	const [message, setMessage] = useState(null)
 	const [newBlog, setNewBlog] = useState({ title: "", author: "", url: "" })
+	const dispatch = useDispatch()
+	const notification = useSelector((state) => state.notification)
+	const blogs = useSelector((state) => state.blogs)
 
 	useEffect(() => {
 		const fetchBlogs = async () => {
 			try {
 				const blogs = await blogService.getAll()
 				blogs.sort((a, b) => b.likes - a.likes)
-				setBlogs(blogs)
+				dispatch(setBlogs(blogs))
 			} catch (error) {
 				console.error("Failed to fetch blogs:", error)
 			}
@@ -50,27 +54,22 @@ const App = () => {
 			setPassword("")
 		} catch (exception) {
 			note("wrong credentials")
-			console.log(exception)
-			setTimeout(() => {
-				setMessage(null)
-			}, 5000)
 		}
 	}
 
-	const Notification = (props) => {
-		console.log(props.message)
-		if (props.message === null) {
+	const Notification = () => {
+		if (select === null) {
 			return null
 		}
-		if (props.message !== null) {
-			return <div className="notemessage">{props.message.content}</div>
+		if (select !== null) {
+			return <div className="notemessage">{notification.content}</div>
 		}
 	}
 
 	const note = (content) => {
-		setMessage({ content })
+		dispatch(createNoti({ content }))
 		setTimeout(() => {
-			setMessage(null)
+			dispatch(createNoti(null))
 		}, 5000)
 	}
 
@@ -115,9 +114,8 @@ const App = () => {
 			}
 
 			const returnedBlog = await blogService.create(blogObject)
-			setBlogs(blogs.concat(returnedBlog))
+			dispatch(createBlog(returnedBlog))
 			note(`A new blog "${newBlog.title}" by ${newBlog.author} added`)
-			setNewBlog({ title: "", author: "", url: "" })
 		} catch (error) {
 			note("error adding blog")
 		}
@@ -153,7 +151,7 @@ const App = () => {
 	return (
 		<div>
 			<h1>Blogs</h1>
-			<Notification message={message} />
+			<Notification />
 			{!user ? loginForm() : blogList()}
 		</div>
 	)
