@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
+import Users from './components/users';
 import blogService from './services/blogs';
-import { loginUser } from './userReducer';
+import { loginUser , addLoginUser,logOutUser,getAllUsers} from './userReducer';
 import './index.css';
 import Togglable from './components/Togglable';
 import BlogForm from './components/BlogForm';
@@ -9,6 +10,25 @@ import { setNotification } from './notificationReducer';
 import { initialBlogs, createBlog } from './bloglistReducer';
 import { deleteBlogState } from './bloglistReducer';
 import { useDispatch, useSelector } from 'react-redux';
+import { Routes, Route, Link } from 'react-router-dom';
+
+const Menu = () => {
+	const padding = {
+		paddingRight: 5,
+	}
+	return (
+		<div>
+			<Link style={padding} to="/">
+				Home
+			</Link>
+			<Link style={padding} to="/Users">
+				Users
+			</Link>
+		</div>
+	)
+}
+
+
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -19,19 +39,20 @@ const App = () => {
   const { notification } = useSelector((state) => state.notification);
   const bloglist = useSelector((state) => state.blogs);
   const loggeduser = useSelector((state) => state.users.loggedUser);
+  const allUsers = useSelector((state) => state.users.users);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      dispatch(addLoginUser(user));
       blogService.setToken(user.token);
     }
   }, []);
 
   useEffect(() => {
     dispatch(initialBlogs());
-  }, [dispatch]);
+     dispatch(getAllUsers())}, [dispatch]);
 
   const handleLogin = async (event) => {
     event.preventDefault();
@@ -82,7 +103,9 @@ const App = () => {
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogappUser');
-    setUser(null);
+    dispatch(logOutUser());
+    setPassword('');
+    setUsername('');
   };
   const addBlog = async (event) => {
     event.preventDefault();
@@ -129,11 +152,31 @@ const App = () => {
     </div>
   );
 
+  if (loggeduser === null) {
+    return (
+      
+        
+      <div>
+        <h1>Blogs</h1>
+        <Notification />
+        {loginForm()}
+      
+      </div>
+    )
+  }
+
   return (
     <div>
       <h1>Blogs</h1>
       <Notification />
-      {!loggeduser ? loginForm() : blogList()}
+      <Menu />
+      <Routes>
+				<Route path="/" element={loggeduser ? blogList() : loginForm()} />
+        <Route path="/users" element={<Users users={allUsers} blogs={bloglist}/>}/>
+
+			</Routes>
+
+      
     </div>
   );
 };
