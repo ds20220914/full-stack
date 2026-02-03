@@ -2,6 +2,7 @@ import ReactDOM from "react-dom/client"
 import App from "./App"
 import notificationReducer from "./notificationReducer"
 import bloglistReducer from "./bloglistReducer"
+import { combineReducers } from "redux"
 
 const reducer = combineReducers({
 	notification: notificationReducer,

@@ -1,16 +1,14 @@
-import ReactDOM from "react-dom/client"
-import App from "./App"
-import notificationReducer from "./notificationReducer"
-import bloglistReducer from "./bloglistReducer"
+import ReactDOM from 'react-dom/client';
+import { Provider } from 'react-redux';
+import App from './App';
+import './index.css';
+import store from './store';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-const reducer = combineReducers({
-	notification: notificationReducer,
-	blogs: bloglistReducer,
-})
-const store = createStore(reducer)
-
-ReactDOM.createRoot(document.getElementById("root")).render(
-	<Provider store={store}>
-		<App />
-	</Provider>,
-)
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <Provider store={store}>
+    <Router>
+      <App />
+    </Router>
+  </Provider>
+);
